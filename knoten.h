@@ -12,6 +12,6 @@ public:
 	Knoten();
 	Knoten(int id);
 	int gebeKnotenIDzurueck();
-	void fuegeNachbarnDesKnotenhinzu(int uebergabeNachbarKnotenID);
+	void fuegeNachbarnDesKnotenhinzu(Knoten &uebergabeNachbarKnoten);
 	std::vector<int> gebeAlleNachbarndesKnotenzurueck();
 };

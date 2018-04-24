@@ -10,17 +10,8 @@ Knoten::Knoten(int id) {
 int Knoten::gebeKnotenIDzurueck() {
 	return this->id;
 }
-void Knoten::fuegeNachbarnDesKnotenhinzu(int uebergabeNachbarKnotenID) {
-	//in Klasse Knoten definiert:	std::vector<int> nachbarnDesKnoten;
-	this->nachbarnDesKnoten.push_back(uebergabeNachbarKnotenID); 	
-	
-	if (this->id == 0) {
-		std::cout << "ID hinzugefuegt zu " << this->id << " : " << uebergabeNachbarKnotenID << std::endl;
-		for (int i = 0; i < this->nachbarnDesKnoten.size(); i++) {
-			std::cout << this->nachbarnDesKnoten[i] << " ,";
-		}
-		std::cout << std::endl;
-	}
+void Knoten::fuegeNachbarnDesKnotenhinzu(Knoten &uebergabeNachbarKnoten) {
+	this->nachbarnDesKnoten.push_back(uebergabeNachbarKnoten.gebeKnotenIDzurueck()); 	
 }
 std::vector<int> Knoten::gebeAlleNachbarndesKnotenzurueck() {
 	return this->nachbarnDesKnoten;

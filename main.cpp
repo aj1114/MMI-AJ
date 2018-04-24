@@ -25,8 +25,7 @@ int main(){
 	///eingelesenerGraph.ueberpruefeObKanteVorhanden(7, 12);
 	//eingelesenerGraph.ueberpruefeObKanteVorhanden(4, 9);
 	
-	int anzahl_zsm_komp = algorithm().breitensuche_iterativ(eingelesenerGraph);
-
+	cout << "ZsmKomp mit it_breitensuche: " << algorithm().breitensuche_iterativ(eingelesenerGraph) << endl;
 
 	system("pause");
 	return 0;

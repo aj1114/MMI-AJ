@@ -13,7 +13,7 @@ using namespace std;
 
 Graph::Graph(){}
 Graph::~Graph(void){}
-Graph Graph::dateieinlesen(string pfad_zu_datei, Graph eingelesenerGraph) {
+Graph Graph::dateieinlesen(string pfad_zu_datei, Graph &eingelesenerGraph) {
 	string einleseformat;
 	string dateiname;
 
@@ -28,9 +28,11 @@ Graph Graph::dateieinlesen(string pfad_zu_datei, Graph eingelesenerGraph) {
 	}
 	string line; //zwischenspeicher Einzulesende Zeile
 	int i = 0; //zaehler
+	Knoten Startknoten;
+	Knoten Zielknoten;
+	int id_startknoten;
+	int id_zielknoten;
 	while (getline(input, line)) { //solange noch Inhalt bzw. naechste Zeile existiert
-		int startknoten;
-		int zielknoten;
 		if (i == 0) {
 			eingelesenerGraph.setzeAnzahlKnoten_erstelleleereListe(stoi(line)); //string to int -> erste Zahl in Textdatei == Anzahl Knoten
 		}
@@ -46,26 +48,36 @@ Graph Graph::dateieinlesen(string pfad_zu_datei, Graph eingelesenerGraph) {
 			}
 		}
 		if (i > 1) { //ab der zweiten Zeile also (V auslassen)
-					 ////////////////////////////////////ABSPEICHERN der Werte///////////////////////////	//input: string "line" 
+			 ////////////////////////////////////ABSPEICHERN der Werte///////////////////////////	//input: string "line" 
 			if (einleseformat == "liste") {															//Liste	- BSP: 0 6 //Leerzeichen oder Tab
 				int tabzeichen = line.find("\t");
 				int endzeichen = line.find("\n");
-				startknoten = stoi(line.substr(0, tabzeichen));
-				zielknoten = stoi(line.substr((line.length() / 2), endzeichen));
+				id_startknoten = stoi(line.substr(0, tabzeichen));
+				id_zielknoten = stoi(line.substr((line.length() / 2), endzeichen));
 				//cout << "Quellknoten: " << startknoten << " Zielknoten: " << zielknoten << "\n";
 				//evt. hier Gewichtung mit einbauen falls mit eingelesen werden soll
-				eingelesenerGraph.fuegeKantehinzu(startknoten, zielknoten);		//Kanten den Knoten hinzufuegen
+
+				Startknoten= eingelesenerGraph.gebeKnotenzurueck(id_startknoten);
+				Zielknoten = eingelesenerGraph.gebeKnotenzurueck(id_zielknoten);
+			
+				eingelesenerGraph.fuegeKantehinzu(Startknoten, Zielknoten);
 				if (eingelesenerGraph.pruefeObGraphGerichtet() == false)
-					eingelesenerGraph.fuegeKantehinzu(zielknoten, startknoten);		//Kanten den Knoten hinzufuegen
+					eingelesenerGraph.fuegeKantehinzu(Zielknoten, Startknoten);		//Rueckrichtung
+
+				//cout << Startknoten.gebeKnotenIDzurueck() << " nach Knoten  " << Zielknoten.gebeKnotenIDzurueck() << endl;
 
 			}
 			else { //Matrix - BSP: 0	0	0	0	0	0	1	0	0	1	0	0	0	1	0 
 				   //aktuell werden Kanten in beide Richtungen angelegt, sodass bei einem gerichteten Grafen die Rückrichtungen wieder entfernt werden muessen
-				startknoten = i - 2;  //beginnt ja ab 0
+				id_startknoten = i - 2;  //beginnt ja ab 0
+				Startknoten = eingelesenerGraph.gebeKnotenzurueck(id_startknoten);
 				line.erase(std::remove(line.begin(), line.end(), '\t'), line.end()); // Tabs in Zeile entfernen
+
 				for (int z = 0; z < line.length(); z++) { // in Zeile jedes Zeichen einzeln durchgehen
-					if (line[z] == '1')  //also eine Kante
-						eingelesenerGraph.fuegeKantehinzu(startknoten, z); // z==Zielknoten
+					if (line[z] == '1') {  //also eine Kante
+						Zielknoten = eingelesenerGraph.gebeKnotenzurueck(z);
+						eingelesenerGraph.fuegeKantehinzu(Startknoten, Zielknoten); // z==Zielknoten
+					}
 				}
 			}
 		}
@@ -89,7 +101,7 @@ void Graph::setzeAnzahlKnoten_erstelleleereListe(int knotenanzahl) {
 int Graph::ausgabeAnzahlKanten() {
 	return kantenliste.size();
 }
-bool Graph::ueberpruefeObKanteVorhanden(Knoten uebergabequellknoten, Knoten uebergabezielknoten) {
+bool Graph::ueberpruefeObKanteVorhanden(Knoten &uebergabequellknoten, Knoten &uebergabezielknoten) {
 	unordered_map<int, Kante>::iterator temp = kantenliste.find(uebergabequellknoten.gebeKnotenIDzurueck()); //legt eine neue temp. map an mit allen Kanten die von Quellknoten aus abgehen
 	if (temp == kantenliste.end()) { //wenn StartKnotenID nicht in der neuen Map gefunden wurde gibt es von dort logischerweise auch keine Kante.
 		//cout << "vom Knoten " << quellknoten << "aus gibt es keine Kante!" << endl;
@@ -104,7 +116,7 @@ bool Graph::ueberpruefeObKanteVorhanden(Knoten uebergabequellknoten, Knoten uebe
 	//cout << "Von Knoten " << temp->first << " gibt es keine Kante nach: " << zielknoten << endl;
 	return false; //andernfalls gibt es zwar den quellknoten aber keine kante zum Zielknoten
 }
-bool Graph::ueberpruefeObKnotenVorhanden(Knoten uebergabeknoten) {
+bool Graph::ueberpruefeObKnotenVorhanden(Knoten &uebergabeknoten) {
 	//unordered_map<int, int>::const_iterator temp = knotenliste.find(uebergabeknoten.gebeKnotenIDzurueck());
 	
 	if (knotenliste.find(uebergabeknoten.gebeKnotenIDzurueck()) == knotenliste.end()){
@@ -116,24 +128,25 @@ bool Graph::ueberpruefeObKnotenVorhanden(Knoten uebergabeknoten) {
 		return true;
 	}
 }
-void Graph::fuegeKantehinzu(Knoten uebergabequellknoten, Knoten uebergabezielknoten) {
+void Graph::fuegeKantehinzu(Knoten &uebergabequellknoten, Knoten &uebergabezielknoten) {
 	//Idee: hash aus KnotenID1 + "-" + KnotenID2 bilden:
 	string id1_id2 = to_string(uebergabequellknoten.gebeKnotenIDzurueck()) + '-' + to_string(uebergabezielknoten.gebeKnotenIDzurueck());
 	hash<string> hash_funktion;
 	size_t id1_id2_hashed = hash_funktion(id1_id2); 
 		
 	//cout << " zu hashende ID: " << id1_id2 << " neuer hashwert: " << id1_id2_hashed << endl;
-	Kante neueKante = Kante(uebergabequellknoten.gebeKnotenIDzurueck(), uebergabezielknoten.gebeKnotenIDzurueck());
+	Kante neueKante = Kante(uebergabequellknoten, uebergabezielknoten);
 	kantenliste.insert({ id1_id2_hashed, neueKante });
 
 	///Achtung: Hier Erweiterung einfuegen, falls Kantengewicht mit eingefuehrt wird!
 	
 	//neuen Nachbarn an den Nachbar-Vektor des Knotens hinzufuegen:
-	uebergabequellknoten.fuegeNachbarnDesKnotenhinzu(uebergabezielknoten.gebeKnotenIDzurueck());
+	knotenliste[uebergabequellknoten.gebeKnotenIDzurueck()].fuegeNachbarnDesKnotenhinzu(uebergabezielknoten);
 }
-void Graph::fuegeKnotenhinzu(Knoten uebergabeneuerknoten){
-	if (ueberpruefeObKnotenVorhanden(uebergabeneuerknoten) == false) {
-		knotenliste.insert({uebergabeneuerknoten.gebeKnotenIDzurueck(), uebergabeneuerknoten});
+void Graph::fuegeKnotenhinzu(int uebergabeneuerknotenID){
+	Knoten neuerKnoten = Knoten(uebergabeneuerknotenID);
+	if (ueberpruefeObKnotenVorhanden(neuerKnoten) == false) {
+		knotenliste.insert({uebergabeneuerknotenID, neuerKnoten });
 		//cout << "Neuen Knoten hinzugefuegt: " << uebergabeneuerknoten.gebeKnotenIDzurueck() << endl;
 	}
 }
@@ -156,20 +169,17 @@ bool Graph::entferneKante(Knoten uebergabequellknoten, Knoten uebergabezielknote
 	}
 	return false;
 }
-int Graph::gebeNaechsteUnbesuchteKnotenIDzurueck(vector<bool> besuchte_knoten) {
+int Graph::gebeNaechsteUnbesuchteKnotenIDzurueck(vector<bool> &besuchte_knoten) {
 	for (int i = 0; i < besuchte_knoten.size(); i++){
 		if (besuchte_knoten[i] == false) return i; //sobald nicht besuchter Knoten gefunden, gebe diesen zurueck
 	}
 	return -1; //wenn keine unbesuchten mehr vorhanden
 }
-//Knoten Graph::gebeKnotenzurueck(int uebergabeKnotenID) {
-	//return knotenliste.find(uebergabeKnotenID);
-
-	///////////////
-	//////////////
-	/////////////TODO
-	//////////////
-	///////////////
-//}
+Knoten Graph::gebeKnotenzurueck(int uebergabeKnotenID) {
+	if (knotenliste.find(uebergabeKnotenID) == knotenliste.end()) {
+		return NULL;
+	}
+	else return knotenliste[uebergabeKnotenID];
+}
 
 
