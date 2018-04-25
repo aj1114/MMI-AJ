@@ -38,12 +38,20 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 	int zusammenhangskomponenten = 0;
 	vector<bool> besuchte_knoten;
 	queue<Knoten> queue;
+	/*
+	for-schleife fail -> vektor anders initialisiseren (GH) (Siehe ebenfalls Tiefensuche
+	*/
 	for (int i = 0; i < eingelesenerGraph.ausgabeAnzahlKnoten(); i++) { //anfangs sind keine Knoten besucht - vektor der Größe erstellen
 		besuchte_knoten.push_back(i);
 		besuchte_knoten[i] = false;
 	}
 	Knoten startKnoten;
 	Knoten tempKnoten;
+
+	/*
+	gebeNaechsteUnbesuchteKnotenIDzurueck sollte direkt nachbarn zurueckgeben, nicht ID -  (GH)
+	in while: entscheiden ob mit knoten-objekt oder mit ID -> beimir: durcheinander (GH)s
+	*/
 	int startKnotenID = eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten); // Rueckgabewert -1 wenn alle besucht sind!! //fange mit Knoten[0] an
 	int naechsterNachbar;
 	vector<int> NachbarnDesKnotens;
@@ -54,7 +62,7 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 		besuchte_knoten[startKnotenID] = true;
 
 		while (!queue.empty()) {            // solange queue nicht leer ist
-			if (eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten) == -1) exit; //wenn alle Knoten besucht, breche ab
+			//if (eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten) == -1) exit; //wenn alle Knoten besucht, breche ab
 			tempKnoten = queue.front();	// erstes Element zwischenspeichern
 			queue.pop();				// erstes Element von der queue nehmen
 
@@ -76,7 +84,7 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 	}
 	return zusammenhangskomponenten;
 }
-
+	
 
 int algorithm::starte_tiefensuche_rekursiv(Graph &eingelesenerGraph) { //Rueckgabewert == Zusammenhangskomponenten
 	int anzahl_knoten_im_uebergebeben_graph = eingelesenerGraph.ausgabeAnzahlKnoten();
