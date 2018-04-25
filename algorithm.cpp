@@ -12,7 +12,7 @@ using namespace std;
 //				(rekursiv) zur Bestimmung der Anzahl
 //				der Zusammenhangskomponenten
 
-algorithm::algorithm(){}
+algorithm::algorithm() {}
 
 /*breitensuche_iterativ(start_node, goal_node) { //struktur
 	for (all nodes i) visited[i] = false; // anfangs sind keine Knoten besucht
@@ -46,7 +46,7 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 	Knoten tempKnoten;
 	int startKnotenID = eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten); // Rueckgabewert -1 wenn alle besucht sind!! //fange mit Knoten[0] an
 	int naechsterNachbar;
-	vector<int> NachbarnDesKnotens; 
+	vector<int> NachbarnDesKnotens;
 	while (startKnotenID != -1) {
 		startKnoten = eingelesenerGraph.gebeKnotenzurueck(startKnotenID);
 		NachbarnDesKnotens = startKnoten.gebeAlleNachbarndesKnotenzurueck();
@@ -59,6 +59,7 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 			queue.pop();				// erstes Element von der queue nehmen
 
 			NachbarnDesKnotens = tempKnoten.gebeAlleNachbarndesKnotenzurueck();
+
 			for (int i = 0; i < NachbarnDesKnotens.size(); i++) { //fuer alle nachfolgenden Knoten
 				naechsterNachbar = NachbarnDesKnotens[i];
 				//cout << "naechster Nachbar: " << naechsterNachbar ;
@@ -77,7 +78,7 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 }
 
 
-/*int algorithm::starte_tiefensuche_rekursiv(Graph &eingelesenerGraph) { //Rueckgabewert == Zusammenhangskomponenten - https://de.wikipedia.org/wiki/Breitensuche#Algorithmus_(formal)
+int algorithm::starte_tiefensuche_rekursiv(Graph &eingelesenerGraph) { //Rueckgabewert == Zusammenhangskomponenten
 	int anzahl_knoten_im_uebergebeben_graph = eingelesenerGraph.ausgabeAnzahlKnoten();
 	int zusammenhangskomponenten = 0;
 	vector<bool> besuchte_knoten;
@@ -86,49 +87,29 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 		besuchte_knoten[i] = false;
 	}
 	int startKnotenID = eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten); // Rueckgabewert -1 wenn alle besucht sind!! //fange mit Knoten[0] an
-	Knoten startKnoten = eingelesenerGraph.gebeKnotenzurueck(startKnotenID);
+	Knoten startKnoten;
 	int counter = 0;
 		
-	
 	while (startKnotenID != -1) {
-		tiefensuche_rekursiv(startKnoten);
+		startKnoten = eingelesenerGraph.gebeKnotenzurueck(startKnotenID);
+		tiefensuche_rekursiv(eingelesenerGraph, startKnoten, besuchte_knoten);
+		zusammenhangskomponenten++;
+		startKnotenID = eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten); // Rueckgabewert -1 wenn alle besucht sind!!
 	}
-
-	
 	return zusammenhangskomponenten;
 }
 
-void algorithm::tiefensuche_rekursiv(Knoten &uebergabeKnoten) {
-	// zu x existiert Weg aus Baumkanten
-	besucht[x] = true; b[x] = ++counter;
-	for (y in Nachbarn von x) {
-		if (not besucht[y]) {
-			dfs(y); // xy heiﬂt Baum-Kante
+void algorithm::tiefensuche_rekursiv(Graph &eingelesenerGraph, Knoten &uebergabeKnoten, vector<bool> &besuchte_knoten) {
+	besuchte_knoten[uebergabeKnoten.gebeKnotenIDzurueck()] = true; // wenn Knoten bereits besucht
+	//b[x] = ++counter;
+	int naechsterNachbar;
+	Knoten naechsterKnoten;
+	vector<int> NachbarnDesKnotens = uebergabeKnoten.gebeAlleNachbarndesKnotenzurueck();
+	for (int i = 0; i < NachbarnDesKnotens.size(); i++) {
+		naechsterNachbar = NachbarnDesKnotens[i];
+		naechsterKnoten = eingelesenerGraph.gebeKnotenzurueck(naechsterNachbar);
+		if (besuchte_knoten[naechsterNachbar] == false) {
+			tiefensuche_rekursiv(eingelesenerGraph, naechsterKnoten, besuchte_knoten);
 		}
 	}
 }
-*/
-
-
-/*
-vector<int> Algorithmen::startRecursiveDepthSearch(map<int, vector<int> > adjlist) {
-	cout << "Starten der rekursiven Tiefensuche" << std::endl;
-	vector<int> val;
-	for (int i = 0; i < adjlist.size(); i++) {
-		val.push_back(0);
-	}
-	id = 0;
-	recursiveDepthSearch(adjlist, 0, val);
-	cout << endl;
-	return val;
-};
-void Algorithmen::recursiveDepthSearch(map<int, vector<int> > adjlist, int node, vector<int> &val) {
-	cout << "TSR(" << node << ")" << endl;
-	val[node] = ++id;								// Speichern der wievielte besuchte Knoten es ist
-	for (int i = 0; i < adjlist[node].size(); i++) {	// F¸r alle Nachbarn
-		if (val[adjliast[node][i]] == 0) {			// Pr¸fen ob sie noch nicht besucht wurden ( =0 )
-			recursiveDepthSearch(adjlist, adjlist[node][i], val);
-		}
-	}
-};
-*/

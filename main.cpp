@@ -20,13 +20,10 @@ int main(){
 	cout << "Knoten hinzugefuegt: " << eingelesenerGraph.ausgabeAnzahlKnoten() << endl;
 	cout << "Kanten hinzugefuegt: " << eingelesenerGraph.ausgabeAnzahlKanten()/2 << endl;
 	cout << endl;
-
-	//eingelesenerGraph.ueberpruefeObKnotenVorhanden(4);
-	///eingelesenerGraph.ueberpruefeObKanteVorhanden(7, 12);
-	//eingelesenerGraph.ueberpruefeObKanteVorhanden(4, 9);
 	
 	cout << "ZsmKomp mit it_breitensuche: " << algorithm().breitensuche_iterativ(eingelesenerGraph) << endl;
-
+	cout << "ZsmKomp mit rek_tiefensuche: " << algorithm().starte_tiefensuche_rekursiv(eingelesenerGraph) << endl;
+	
 	system("pause");
 	return 0;
 }

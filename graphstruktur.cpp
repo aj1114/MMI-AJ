@@ -53,7 +53,8 @@ Graph Graph::dateieinlesen(string pfad_zu_datei, Graph &eingelesenerGraph) {
 				int tabzeichen = line.find("\t");
 				int endzeichen = line.find("\n");
 				id_startknoten = stoi(line.substr(0, tabzeichen));
-				id_zielknoten = stoi(line.substr((line.length() / 2), endzeichen));
+				id_zielknoten = stoi(line.substr((tabzeichen +1), endzeichen));
+
 				//cout << "Quellknoten: " << startknoten << " Zielknoten: " << zielknoten << "\n";
 				//evt. hier Gewichtung mit einbauen falls mit eingelesen werden soll
 
@@ -63,9 +64,6 @@ Graph Graph::dateieinlesen(string pfad_zu_datei, Graph &eingelesenerGraph) {
 				eingelesenerGraph.fuegeKantehinzu(Startknoten, Zielknoten);
 				if (eingelesenerGraph.pruefeObGraphGerichtet() == false)
 					eingelesenerGraph.fuegeKantehinzu(Zielknoten, Startknoten);		//Rueckrichtung
-
-				//cout << Startknoten.gebeKnotenIDzurueck() << " nach Knoten  " << Zielknoten.gebeKnotenIDzurueck() << endl;
-
 			}
 			else { //Matrix - BSP: 0	0	0	0	0	0	1	0	0	1	0	0	0	1	0 
 				   //aktuell werden Kanten in beide Richtungen angelegt, sodass bei einem gerichteten Grafen die Rückrichtungen wieder entfernt werden muessen
