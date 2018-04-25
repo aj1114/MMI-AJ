@@ -49,13 +49,15 @@ int algorithm::breitensuche_iterativ(Graph &eingelesenerGraph) { //Rueckgabewert
 	Knoten tempKnoten;
 
 	/*
-	gebeNaechsteUnbesuchteKnotenIDzurueck sollte direkt nachbarn zurueckgeben, nicht ID -  (GH)
+	gebeNaechsteUnbesuchteKnotenIDzurueck :
+		-sollte direkt nachbarn zurueckgeben, nicht ID -  (GH)
+		-sollte letzten Startknoten mit übergeben bekommen damit ab da nur weiter gesucht werden muss (nicht komplette Liste) (GH)
 	in while: entscheiden ob mit knoten-objekt oder mit ID -> beimir: durcheinander (GH)s
 	*/
 	int startKnotenID = eingelesenerGraph.gebeNaechsteUnbesuchteKnotenIDzurueck(besuchte_knoten); // Rueckgabewert -1 wenn alle besucht sind!! //fange mit Knoten[0] an
 	int naechsterNachbar;
 	vector<int> NachbarnDesKnotens;
-	while (startKnotenID != -1) {
+	while (startKnotenID != -1) { 
 		startKnoten = eingelesenerGraph.gebeKnotenzurueck(startKnotenID);
 		NachbarnDesKnotens = startKnoten.gebeAlleNachbarndesKnotenzurueck();
 		queue.push(startKnoten); //ersten Knoten auf die Queue + "als besucht" setzen
